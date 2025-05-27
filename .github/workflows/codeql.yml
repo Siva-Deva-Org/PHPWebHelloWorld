@@ -1,39 +1,25 @@
-name: "CodeQL"
+name: PHPStan
 
 on:
   push:
     branches: [master]
   pull_request:
     branches: [master]
-  schedule:
-    - cron: '0 2 * * 1'
 
 jobs:
-  analyze:
-    name: Analyze PHP
+  phpstan:
     runs-on: ubuntu-latest
 
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'php' ]
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
       with:
-        languages: ${{ matrix.language }}
+        php-version: '8.1'
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+    - name: Install dependencies
+      run: composer install
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+    - name: Run PHPStan
+      run: vendor/bin/phpstan analyse src --level=max
