@@ -1,5 +1,5 @@
 {
-  "name": "SivaDeva-git/phpwebhelloworld",
+  "name": "sivadeva-git/phpwebhelloworld",
   "require-dev": {
     "phpstan/phpstan": "^1.10"
   }
