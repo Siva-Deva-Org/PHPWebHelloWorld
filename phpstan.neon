@@ -1,0 +1,10 @@
+parameters:
+  level: max
+  paths:
+    - index.php
+
+  excludePaths:
+    - vendor/*
+
+  autoload_directories:
+    - vendor/composer
