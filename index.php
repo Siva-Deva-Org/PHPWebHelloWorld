@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-// Basic Routing Example
-$page = $_GET['page'] ?? 'home';
+// Simulate an unsafe input display (XSS Vulnerability)
+$userInput = $_GET['name'] ?? 'Guest';
 
 function renderHeader(string $title): void
 {
@@ -26,37 +26,11 @@ function renderFooter(): void
     </html>";
 }
 
-function homePage(): void
-{
-    echo "<p>Welcome to the home page.</p>";
-}
-
-function aboutPage(): void
-{
-    echo "<p>This is a sample PHP project to test SonarQube scanning.</p>";
-}
-
-function contactPage(): void
-{
-    echo "<p>Contact us at example@example.com.</p>";
-}
-
 // Main page logic
-renderHeader(ucfirst($page));
+renderHeader('Welcome Page');
 
-switch ($page) {
-    case 'home':
-        homePage();
-        break;
-    case 'about':
-        aboutPage();
-        break;
-    case 'contact':
-        contactPage();
-        break;
-    default:
-        echo "<p>404 - Page not found</p>";
-}
+// Intentional XSS vulnerability: echoing unsanitized user input!
+echo "<p>Hello, $userInput!</p>";
 
 renderFooter();
 ?>
