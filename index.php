@@ -81,21 +81,34 @@ function renderFooter()
     </html>";
 }
 
-// Hardcoded demo credentials (DO NOT use in production)
+// Intentionally hardcoded credentials (Bad practice — SonarQube will flag)
 $validUsername = 'admin';
 $validPassword = 'password123';
 
+// Simulate database connection (vulnerable to SQL Injection!)
+function fakeDatabaseCheck($username, $password)
+{
+    // Simulated vulnerable query — DO NOT USE in real apps
+    $sql = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+    
+    // Simulate query execution (SonarQube will flag this as injection risk)
+    if ($username === 'admin' && $password === 'password123') {
+        return true;
+    }
+    return false;
+}
+
 $errorMessage = '';
 $successMessage = '';
-$userInput = '';
+$userInput = $_POST['username'] ?? '';
+$passwordInput = $_POST['password'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $userInput = $_POST['username'] ?? '';
-    $passwordInput = $_POST['password'] ?? '';
 
-    // Simple login check
-    if ($userInput === $validUsername && $passwordInput === $validPassword) {
-        $successMessage = "Welcome, " . htmlspecialchars($userInput) . "! You have successfully logged in.";
+    // Weak password comparison (should use password_hash and password_verify)
+    if (fakeDatabaseCheck($userInput, $passwordInput)) {
+        // Unsafe XSS vulnerability (unsanitized echo)
+        $successMessage = "Welcome, <b>$userInput</b>! You have successfully logged in.";
     } else {
         $errorMessage = "Invalid username or password.";
     }
@@ -111,15 +124,17 @@ if ($successMessage) {
     echo "<div class='alert alert-success'>$successMessage</div>";
 }
 
+// No CSRF token — another vulnerability
+
 if (!$successMessage) {
-    // Show form only if not successfully logged in
     ?>
 
     <form method="post" action="">
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
+            <!-- No input validation on the username field -->
             <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autofocus
-                   value="<?php echo htmlspecialchars($userInput); ?>">
+                   value="<?php echo $userInput; ?>">
         </div>
         <div class="mb-3">
             <label for="password" class="form-label">Password</label>
