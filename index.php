@@ -3,8 +3,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$userInput = $_POST['username'] ?? '';
-
 function renderHeader($title)
 {
     echo "<!DOCTYPE html>
@@ -52,10 +50,17 @@ function renderHeader($title)
             }
             .alert {
                 margin-top: 1rem;
+                padding: 0.75rem 1rem;
+                border-radius: 5px;
+                font-weight: 600;
+            }
+            .alert-error {
                 color: #ffdddd;
                 background-color: rgba(255, 0, 0, 0.3);
-                border-radius: 5px;
-                padding: 0.75rem 1rem;
+            }
+            .alert-success {
+                color: #ddffdd;
+                background-color: rgba(0, 128, 0, 0.3);
             }
             form {
                 margin-top: 1rem;
@@ -76,28 +81,55 @@ function renderFooter()
     </html>";
 }
 
-renderHeader('Login Page');
+// Hardcoded demo credentials (DO NOT use in production)
+$validUsername = 'admin';
+$validPassword = 'password123';
+
+$errorMessage = '';
+$successMessage = '';
+$userInput = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Intentional XSS vulnerability: echoing unsanitized user input
-    echo "<p>Hello, <strong>$userInput</strong>!</p>";
-} else {
-    echo "<p>Please enter your username and password to login.</p>";
+    $userInput = $_POST['username'] ?? '';
+    $passwordInput = $_POST['password'] ?? '';
+
+    // Simple login check
+    if ($userInput === $validUsername && $passwordInput === $validPassword) {
+        $successMessage = "Welcome, " . htmlspecialchars($userInput) . "! You have successfully logged in.";
+    } else {
+        $errorMessage = "Invalid username or password.";
+    }
 }
-?>
 
-<form method="post" action="">
-    <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autofocus>
-    </div>
-    <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
-    </div>
-    <button type="submit" class="btn btn-primary w-100">Login</button>
-</form>
+renderHeader('Login Page');
 
-<?php
+if ($errorMessage) {
+    echo "<div class='alert alert-error'>$errorMessage</div>";
+}
+
+if ($successMessage) {
+    echo "<div class='alert alert-success'>$successMessage</div>";
+}
+
+if (!$successMessage) {
+    // Show form only if not successfully logged in
+    ?>
+
+    <form method="post" action="">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autofocus
+                   value="<?php echo htmlspecialchars($userInput); ?>">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+
+    <?php
+}
+
 renderFooter();
 ?>
