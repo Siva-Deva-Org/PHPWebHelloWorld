@@ -89,7 +89,9 @@ $validPassword = 'password123';
 function fakeDatabaseCheck($username, $password)
 {
     // Simulated vulnerable query — DO NOT USE in real apps
-    $sql = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+    $conn = new mysqli("localhost", "root", "password", "mydb");
+$result = $conn->query("SELECT * FROM users WHERE username = '$username' AND password = '$password'");
+
     
     // Simulate query execution (SonarQube will flag this as injection risk)
     if ($username === 'admin' && $password === 'password123') {
