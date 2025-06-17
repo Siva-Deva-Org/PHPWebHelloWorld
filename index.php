@@ -88,7 +88,7 @@ $validPassword = 'password123';
 // Simulate database connection (vulnerable to SQL Injection!)
 function fakeDatabaseCheck($username, $password)
 {
-    //   Simulated vulnerable query — DO NOT USE in real apps
+    //     Simulated vulnerable query — DO NOT USE in real apps
     $conn = new mysqli("localhost", "root", "password", "mydb");
 $result = $conn->query("SELECT * FROM users WHERE username = '$username' AND password = '$password'");
 
